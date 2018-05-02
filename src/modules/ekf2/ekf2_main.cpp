@@ -929,7 +929,7 @@ void Ekf2::run()
 							range_finder.current_distance = _rng_gnd_clearance.get();
 						}
 					}
-					recieved_range_data.count();
+					perf_count(recieved_range_data);
 
 					_ekf.setRangeData(range_finder.timestamp, range_finder.current_distance);
 
