@@ -39,6 +39,7 @@
  */
 
 #include <cfloat>
+#include <systemlib/perf_counter.h>
 
 #include <drivers/drv_hrt.h>
 #include <ecl/EKF/ekf.h>
@@ -189,6 +190,8 @@ private:
 	orb_advert_t _estimator_innovations_pub{nullptr};
 	orb_advert_t _ekf2_timestamps_pub{nullptr};
 	orb_advert_t _sensor_bias_pub{nullptr};
+	/////
+	perf_counter_t recieved_range_data;
 
 	uORB::Publication<vehicle_local_position_s> _vehicle_local_position_pub;
 	uORB::Publication<vehicle_global_position_s> _vehicle_global_position_pub;
@@ -402,6 +405,7 @@ private:
 
 Ekf2::Ekf2():
 	ModuleParams(nullptr),
+	recieved_range_data(perf_alloc(PC_COUNT,"recieved ranges")),
 	_vehicle_local_position_pub(ORB_ID(vehicle_local_position)),
 	_vehicle_global_position_pub(ORB_ID(vehicle_global_position)),
 	_params(_ekf.getParamHandle()),
@@ -925,6 +929,7 @@ void Ekf2::run()
 							range_finder.current_distance = _rng_gnd_clearance.get();
 						}
 					}
+					recieved_range_data.count();
 
 					_ekf.setRangeData(range_finder.timestamp, range_finder.current_distance);
 
